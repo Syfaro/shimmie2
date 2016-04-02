@@ -1007,7 +1007,7 @@ if (!function_exists('http_parse_headers')) { #http://www.php.net/manual/en/func
 /**
  * HTTP Headers can sometimes be lowercase which will cause issues.
  * In cases like these, we need to make sure to check for them if the camelcase version does not exist.
- * 
+ *
  * @param array $headers
  * @param mixed $name
  * @return mixed
@@ -1016,7 +1016,7 @@ function findHeader ($headers, $name) {
 	if (!is_array($headers)) {
 		return false;
 	}
-	
+
 	$header = false;
 
 	if(array_key_exists($name, $headers)) {
@@ -1024,7 +1024,7 @@ function findHeader ($headers, $name) {
 	} else {
 		$headers = array_change_key_case($headers); // convert all to lower case.
 		$lc_name = strtolower($name);
-		
+
 		if(array_key_exists($lc_name, $headers)) {
 			$header = $headers[$lc_name];
 		}
@@ -1680,6 +1680,17 @@ function _get_user() {
 	    $tmp_user = User::by_session($page->get_cookie("user"), $page->get_cookie("session"));
 		if(!is_null($tmp_user)) {
 			$user = $tmp_user;
+		}
+	}
+	if(isset($_SERVER['DN']) && $_SERVER['DN'] != '') {
+		if($config->get_bool('enable_cert_auth', false)) {
+			$parts = explode('emailAddress=', $_SERVER['DN']);
+			if (count($parts) == 2) {
+				$tmp_user = User::by_email($parts[1]);
+				if(!is_null($user)) {
+					$user = tmp_user;
+				}
+			}
 		}
 	}
 	if(is_null($user)) {
