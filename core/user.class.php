@@ -118,6 +118,18 @@ class User {
 	}
 
 	/**
+	 * Construct a User by email address.
+	 * @param string $email
+	 * @return null|User
+	 */
+	public static function by_email(/*string*/ $email) {
+		assert('is_string($email)', var_export($email, true));
+		global $database;
+		$row = $database->get_row($database->scoreql_to_sql("SELECT * FROM users WHERE SCORE_STRNORM(email) = SCORE_STRNORM(:email)"), array("email"=>$name));
+		return is_null($row) ? null : new User($row);
+	}
+
+	/**
 	 * Construct a User by name and password.
 	 * @param string $name
 	 * @param string $pass
